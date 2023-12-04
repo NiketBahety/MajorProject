@@ -18,10 +18,10 @@ def normalize_image(image_path):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # Skew correction
-    coords = np.column_stack(np.where(image > 0))
-    angle = 90 - cv2.minAreaRect(coords)[-1]
-    M = cv2.getRotationMatrix2D((image.shape[1] / 2, image.shape[0] / 2), angle, 1)
-    image = cv2.warpAffine(image, M, (image.shape[1], image.shape[0]), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+    # coords = np.column_stack(np.where(image > 0))
+    # angle = 90 - cv2.minAreaRect(coords)[-1]
+    # M = cv2.getRotationMatrix2D((image.shape[1] / 2, image.shape[0] / 2), angle, 1)
+    # image = cv2.warpAffine(image, M, (image.shape[1], image.shape[0]), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
 
     normalized_image_path = "preprocessed/normalized_" + os.path.basename(image_path)
     cv2.imwrite(normalized_image_path, image)

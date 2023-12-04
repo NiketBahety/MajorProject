@@ -1,11 +1,13 @@
 import re
+import os
+import json
 
 def extract_information(text):
     # Define regular expressions for different pieces of information
-    roll_number_pattern = re.compile(r'Roll No\. (\d+)')
-    unique_id_pattern = re.compile(r'UNIQUE ID (\d+)')
-    name_pattern = re.compile(r'Name(?: of Candidate)? (\w+ \w+)')
-    school_pattern = re.compile(r'School \d+ ([A-Za-z,\' ]+)')
+    roll_number_pattern = re.compile(r'Roll No[.:-]? (\d+)')
+    unique_id_pattern = re.compile(r'UNIQUE ID[.:-]? (\d+)')
+    name_pattern = re.compile(r'Name(?: of Candidate)?[.-: ]? (\w+ \w+)')
+    school_pattern = re.compile(r'\nSchool[.:-]?[\']?[ ]*[a-zA-z ]*[:]?\d*([A-Za-z,:\' ]+)')
     school_pattern2 = re.compile(r'of ([A-Za-z,\' ]+)')
     marks_pattern = re.compile(r'(\d{3}) ([A-Z &]+)\n(\d{3}) (\d{2,3})')
     issue_date = re.compile(r'date[a-zA-Z: ]* ((0[1-9]|[12][0-9]|3[01])[-.](0[1-9]|1[0,1,2])[-.](19|20)\d{2})', re.IGNORECASE)
@@ -30,22 +32,19 @@ def extract_information(text):
 
     return extracted_info
 
-# Read the contents of the first text file
-with open('outputs/CBSE.jpg.txt', 'r') as file1:
-    text1 = file1.read()
+folder_path = "outputs"
+file_list = os.listdir(folder_path)
 
-# Extract information from the first text file
-result1 = extract_information(text1)
+for path in file_list:
+    if "ICSE" in path.upper() or "CBSE" in path.upper():
+        with open(folder_path + "/" + path, 'r') as file:
+            text = file.read()
+            info = extract_information(text)
+            print(info)
 
-# Read the contents of the second text file
-with open('outputs/ICSE.jpg.txt', 'r') as file2:
-    text2 = file2.read()
-
-# Extract information from the second text file
-result2 = extract_information(text2)
-
-# Print the extracted information
-print("Information from CBSE:")
-print(result1)
-print("\nInformation from ICSE:")
-print(result2)
+            output_folder = "parsed"
+            out_path = output_folder + "/" + path + ".json"
+            with open(out_path, "w") as file:
+                pass
+            with open(out_path, "a") as file:
+                json.dump(info, file, sort_keys = True, indent = 4, ensure_ascii = False)
