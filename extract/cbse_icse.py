@@ -21,14 +21,27 @@ def extract_information(text):
     marks_matches = marks_pattern.findall(text)
     issue_date_match = issue_date.search(text) 
 
+    next_line=re.compile(r'Percentage Marks((.*(\n|\r|\r\n)){7})')
+    next_line_match = next_line.search(text)
+    if next_line_match:
+        val = next_line_match.group()
+        val = val.split('\n')[1:-1]
+        val = [s.strip() for s in val]
+        val = [s.split() for s in val]
+        val = [s[0] for s in val]
+        tot=0
+        for s in val:
+            tot+=eval(s)
+
     # Create a dictionary to store extracted information
     extracted_info = {
         'Roll Number / Unique ID': roll_number_match.group(1) if roll_number_match else unique_id_match.group(1) if unique_id_match else None,
         'Name': name_match.group(1) if name_match else None,
         'School': school_match.group(1).strip() if school_match else school_match2.group(1).strip() if school_match2 else None,
-        'Marks': {subject: (theory, practical) for theory, subject, practical in marks_matches} if marks_matches else None,
+        'Percentage': (tot/600) * 100 if next_line_match else 0,
         'Issue date': issue_date_match.group(1) if issue_date_match else None
     }
+
 
     return extracted_info
 
